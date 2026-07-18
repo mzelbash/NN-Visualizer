@@ -1,10 +1,10 @@
-# NN-Explainer
+# NN-Visualizer
 
-**▶ Run it live: [https://mzelbash.github.io/NN-Explainer/](https://mzelbash.github.io/NN-Explainer/)**
+**▶ Run it live: [https://mzelbash.github.io/NN-Visualizer/](https://mzelbash.github.io/NN-Visualizer/)**
 
-NN-Explainer is an interactive teaching tool for fully-connected neural networks (FCNNs). It lets students *see* what happens inside a network: every weight is drawn, every neuron can be opened up, and a live forward pass runs through the whole diagram as you change inputs, weights, or activation functions.
+NN-Visualizer is an interactive teaching tool for fully-connected neural networks (FCNNs). It lets students *see* what happens inside a network: every weight is drawn, every neuron can be opened up, and a live forward pass runs through the whole diagram as you change inputs, weights, or activation functions.
 
-<p align="center"><img src="./default-network.svg" alt="The default 10-8-6-1 network drawn by NN-Explainer" width="700"></p>
+<p align="center"><img src="./default-network.svg" alt="The default 10-8-6-1 network drawn by NN-Visualizer" width="700"></p>
 
 ## Features
 
@@ -27,10 +27,10 @@ MIT.
 
 ## Citation
 
-If you use NN-Explainer, please cite:
+If you use NN-Visualizer, please cite:
 
-> Elbasheer, Mohamed (2026). NN-Explainer: An Interactive Teaching Tool for Fully-Connected Neural Networks. GitHub repository, github.com/mzelbash/NN-Explainer.
+> Elbasheer, Mohamed (2026). NN-Visualizer: An Interactive Teaching Tool for Fully-Connected Neural Networks. GitHub repository, github.com/mzelbash/NN-Visualizer.
 
-NN-Explainer is a modified version of the open-source NN-SVG project (MIT license), which should also be credited:
+NN-Visualizer is a modified version of the open-source NN-SVG project (MIT license), which should also be credited:
 
 > LeNail, Alexander (2019). NN-SVG: Publication-Ready Neural Network Architecture Schematics. Journal of Open Source Software, 4(33), 747, doi:10.21105/joss.00747.
