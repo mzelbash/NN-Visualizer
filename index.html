@@ -1,0 +1,629 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119008715-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-119008715-1');
+    </script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        * { font-weight: 100; }
+        h1 { font-weight: 100; }
+        #graph-container {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            position: fixed;
+        }
+
+        .nn-picker {
+            width: 410px;
+            margin: 30px;
+            z-index: 1000;
+        }
+
+        [data-toggle="collapse"] .fa:before {
+            font-size: 2rem;
+            color: black;
+            content: "\f106";
+            position: relative;
+            top: 5px;
+        }
+        .fa {
+          transition: 0.3s transform ease-in-out;
+        }
+        .collapsed .fa {
+          transform: rotate(-180deg);
+        }
+        .tab-content {
+            padding: 20px;
+        }
+        input[type="range"] {
+            margin-left: 10px;
+        }
+        #count {
+            position: fixed;
+            bottom: 0;
+            right: 1rem;
+            opacity: 0.4;
+            font-weight: 100;
+        }
+        .text {
+            font-weight: 300;
+        }
+        #togglePicker {
+            position: fixed;
+            top: 6px;
+            left: 10px;
+            z-index: 1001;
+            color: #333;
+        }
+        #togglePicker .fa {
+            font-size: 1.3rem;
+        }
+        #neuron-detail {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 390px;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        #neuron-detail .card-body {
+            padding: 15px 20px;
+        }
+        #neuron-detail table {
+            margin-bottom: 10px;
+        }
+        .summation {
+            font-size: 0.8rem;
+            word-wrap: break-word;
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .legend-swatch {
+            display: inline-block;
+            width: 24px;
+            height: 0;
+            border-top: 3px solid;
+            vertical-align: middle;
+        }
+        #reinitFeedback {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            min-height: 1.1rem;
+            color: #28a745;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+    </style>
+
+    <title>NN-Visualizer</title>
+
+</head>
+<body>
+
+
+    <div id="graph-container"></div>
+
+    <a id="togglePicker" href="#" title="Hide/show the controls panel"><i class="fa fa-sliders"></i></a>
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="nn-picker">
+                <div class="card">
+                    <div class="card-header">
+                        <a class="pull-right" data-toggle="collapse" href="#collapsable" role="button"><i class="fa"></i></a>
+                        <h1>NN-Visualizer</h1>
+                        <p>Dr. Mohamed Elbasheer<br><a id="download" href="#">Download SVG</a></p>
+
+                        <nav>
+                            <div class="nav nav-tabs card-header-tabs" role="tablist">
+                                <a class="nav-item nav-link active">FCNN</a>
+                            </div>
+                        </nav>
+
+                    </div>
+                    <div class="tab-content collapse show" id="collapsable">
+                        <div class="tab-pane fade show active" id="FCNN" role="tabpanel">
+
+                            <h4>Style:</h4>
+
+                            <!-- Edge Properties -->
+                            <hr>
+                            <div>
+                                <input type="checkbox" id="edgeWidthProportional" name="edgeWidthProportional" value="edgeWidthProportional" checked>
+                                <label for="edgeWidthProportional">Edge width proportional to edge weights</label>
+                            </div>
+                            <div>
+                                <label for="edgeWidth">Edge Width</label>
+                                <input type="range" id="edgeWidth" name="" min="0" max="2" step="0.01" value="0.5" style="position: relative; top: 3px;">
+                            </div>
+
+                            <hr>
+                            <div>
+                                <input type="checkbox" id="edgeOpacityProportional" name="edgeOpacityProportional" value="edgeOpacityProportional">
+                                <label for="edgeOpacityProportional">Edge opacity proportional to edge weights</label>
+                            </div>
+                            <div>
+                                <label for="edgeOpacity">Edge Opacity</label>
+                                <input type="range" id="edgeOpacity" name="" min="0" max="1" step="0.01" value="1" style="position: relative; top: 3px;">
+                            </div>
+
+                            <hr>
+                            <div>
+                                <input type="checkbox" id="edgeColorProportional" name="edgeColorProportional" value="edgeColorProportional">
+                                <label for="edgeColorProportional">Edge color proportional to edge weights</label>
+                            </div>
+                            <div>
+                                <input type="color" value="#0000ff" id="negativeEdgeColor">
+                                <label for="negativeEdgeColor">Negative Edge Color</label>
+                            </div>
+                            <div>
+                                <input type="color" value="#ff0000" id="positiveEdgeColor">
+                                <label for="positiveEdgeColor">Positive Edge Color</label>
+                            </div>
+                            <div>
+                                <input type="color" value="#505050" id="defaultEdgeColor">
+                                <label for="defaultEdgeColor">Default Edge Color</label>
+                            </div>
+                            <div style="margin-top: 5px; font-size: 0.9rem;">
+                                <span class="legend-swatch" id="legendPositive" style="border-top-color: #ff0000;"></span> positive w
+                                <span class="legend-swatch" id="legendNegative" style="border-top-color: #0000ff; margin-left: 12px;"></span> negative w
+                                <span style="margin-left: 12px;">thickness ∝ |w|</span>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <input type="checkbox" id="showWeightLabels" name="showWeightLabels" value="showWeightLabels">
+                                <label for="showWeightLabels">Show numeric weight labels on edges</label>
+                            </div>
+
+                            <hr>
+                            <div>
+                                <input type="checkbox" id="bezierCurves" name="bezierCurves" value="bezierCurves">
+                                <label for="bezierCurves">Use Bezier Curves</label>
+                            </div>
+
+
+                            <!-- Node Properties -->
+                            <hr>
+                            <div>
+                                <label for="nodeDiameter">Node Diameter</label>
+                                <input type="range" id="nodeDiameter" name="" min="10" max="50" step="1" value="20" style="position: relative; top: 3px;">
+                            </div>
+                            <div>
+                                <input type="color" value="#ffffff" id="nodeColor">
+                                <label for="nodeColor">Node Color</label>
+                            </div>
+                            <div>
+                                <input type="color" value="#333333" id="nodeBorderColor">
+                                <label for="nodeBorderColor">Node Border Color</label>
+                            </div>
+
+                            <!-- Layer Properties -->
+                            <hr>
+                            <div>
+                                <label for="betweenLayers">Layer Spacing</label>
+                                <input type="range" id="betweenLayers" name="" min="30" max="400" step="1" value="160" style="position: relative; top: 3px;">
+                            </div>
+                            <div id="nnDirection">
+                                <label for="nnDirection" style="margin-right:10px;">Direction</label>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="nnDirection" id="horizontal" value="right" checked> horizontal
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="nnDirection" id="vertical" value="up"> vertical
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="showLabels" name="showLabels" value="showLabels" checked>
+                                <label for="showLabels">Show Layer Labels</label>
+                            </div>
+                            <div>
+
+                            <div id="arrowhead">
+                                <input type="checkbox" id="showArrowheads" name="showArrowheads" value="showArrowheads">
+                                <label for="showArrowheads">Show Arrowheads</label>
+                                <div class="form-check form-check-inline ml-3">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="arrowheadStyle" id="empty" value="empty" checked> empty
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="radio" name="arrowheadStyle" id="solid" value="solid"> solid
+                                    </label>
+                                </div>
+                            </div>
+
+                            </div>
+
+                            <hr>
+                            <h4>Architecture:</h4>
+
+                            <hr>
+                            <div id="architecture">
+
+                                <div class="row entry">
+                                    <div class="input-group mb-2 mr-sm-2 col-4">
+                                        <button class="btn btn-secondary btn-remove input-group-prepend"><span class="fa fa-minus"></span></button>
+                                        <input type="number" class="form-control" name="numberOfNodes" step="1" value="10" />
+                                    </div>
+                                    <input type="range" class="form-control col-4" name="betweenNodesInLayer" min="0" max="100" step="1" value="20" style="position: relative; top: -4px;">
+                                </div>
+                                <div class="row entry">
+                                    <div class="input-group mb-2 mr-sm-2 col-4">
+                                        <button class="btn btn-secondary btn-remove input-group-prepend"><span class="fa fa-minus"></span></button>
+                                        <input type="number" class="form-control" name="numberOfNodes" step="1" value="8" />
+                                    </div>
+                                    <input type="range" class="form-control col-4" name="betweenNodesInLayer" min="0" max="100" step="1" value="20" style="position: relative; top: -4px;">
+                                </div>
+                                <div class="row entry">
+                                    <div class="input-group mb-2 mr-sm-2 col-4">
+                                        <button class="btn btn-secondary btn-remove input-group-prepend"><span class="fa fa-minus"></span></button>
+                                        <input type="number" class="form-control" name="numberOfNodes" step="1" value="6" />
+                                    </div>
+                                    <input type="range" class="form-control col-4" name="betweenNodesInLayer" min="0" max="100" step="1" value="20" style="position: relative; top: -4px;">
+                                </div>
+                                <div class="row entry">
+                                    <div class="input-group mb-2 mr-sm-2 col-4">
+                                        <button class="btn btn-secondary btn-remove input-group-prepend"><span class="fa fa-minus"></span></button>
+                                        <input type="number" class="form-control" name="numberOfNodes" step="1" value="1" />
+                                    </div>
+                                    <input type="range" class="form-control col-4" name="betweenNodesInLayer" min="0" max="100" step="1" value="20" style="position: relative; top: -4px;">
+                                </div>
+                                <div class="row entry">
+                                    <div class="input-group mb-2 mr-sm-2 col-4">
+                                        <button class="btn btn-primary btn-add input-group-prepend"><span class="fa fa-plus"></span></button>
+                                        <input type="number" class="form-control" name="numberOfNodes" step="1"/>
+                                    </div>
+                                    <input type="range" class="form-control col-4" name="betweenNodesInLayer" min="0" max="100" step="1" value="20" style="position: relative; top: -4px;">
+                                </div>
+
+                            </div>
+
+                            <hr>
+                            <h4>Initialization:</h4>
+
+                            <hr>
+                            <div>
+                                <label for="initScheme">Scheme</label>
+                                <select id="initScheme" class="form-control form-control-sm" style="display: inline-block; width: auto; margin-left: 10px;">
+                                    <option value="xavier" selected>Xavier/Glorot</option>
+                                    <option value="he">He</option>
+                                    <option value="normal">Normal(0, 0.5)</option>
+                                    <option value="uniform">Uniform(-1, 1)</option>
+                                </select>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <label for="seed">Seed</label>
+                                <input type="number" id="seed" step="1" value="42" class="form-control form-control-sm" style="display: inline-block; width: 90px; margin-left: 10px;">
+                                <button type="button" class="btn btn-sm btn-secondary" id="reinitialize" style="margin-left: 10px;">Reinitialize</button>
+                            </div>
+                            <div id="reinitFeedback" class="text"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Neuron detail panel -->
+    <div id="neuron-detail" class="card">
+        <div class="card-header">
+            <a class="pull-right" href="#" id="closeDetail" style="color: black; font-size: 1.2rem;"><i class="fa fa-times"></i></a>
+            <h4 id="detailTitle" style="margin-bottom: 0;">Neuron</h4>
+            <small id="detailSubtitle" class="text-muted"></small>
+        </div>
+        <div class="card-body" id="detailBody"></div>
+    </div>
+
+    <div id="count"><span></span><a style="font-size: 1rem" href="about.html">About</a></div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+    <script type="text/javascript" src="util.js"></script>
+    <script type="text/javascript" src="FCNN.js"></script>
+
+    <script type="text/javascript">
+
+fcnn = FCNN();
+
+var selectedNeuron = null;
+
+function restart() {
+
+    architecture = $('#architecture').find('input[name="numberOfNodes"]').map((i,el) => $(el).val()).get().filter(input => $.isNumeric(input)).map(s => parseInt(s));
+
+    betweenNodesInLayer = $('#architecture').find('input[name="betweenNodesInLayer"]').map((i,el) => parseFloat($(el).val())).get();
+
+    fcnn.redraw({'architecture_':architecture});
+    fcnn.redistribute({'betweenNodesInLayer_':betweenNodesInLayer});
+
+    $('#count span:first').text(fcnn.graph.nodes.length+" nodes, "+fcnn.graph.links.length+" edges you don't need to draw yourself! ")
+
+    renderDetail();
+}
+
+fcnn.onNodeSelect(function(d) {
+    selectedNeuron = d;
+    renderDetail();
+});
+
+restart();
+
+/////////////////////////////////////////////////////////////////////////////
+                ///////    Select Styling    ///////
+/////////////////////////////////////////////////////////////////////////////
+
+$("#edgeWidthProportional").change(   function() { fcnn.style({'edgeWidthProportional_': this.checked}) });
+$("#edgeWidth").change(               function() { fcnn.style({'edgeWidth_': parseFloat(this.value)}) });
+$("#edgeOpacityProportional").change( function() { fcnn.style({'edgeOpacityProportional_': this.checked});
+    if (this.checked) { $("#edgeOpacity").prop('disabled', true); }
+    else { $("#edgeOpacity").prop('disabled', false); }
+});
+$("#edgeOpacity").change(             function() { fcnn.style({'edgeOpacity_': parseFloat(this.value)}) });
+$("#negativeEdgeColor").change(       function() { fcnn.style({'negativeEdgeColor_': this.value}); $('#legendNegative').css('border-top-color', this.value); });
+$("#positiveEdgeColor").change(       function() { fcnn.style({'positiveEdgeColor_': this.value}); $('#legendPositive').css('border-top-color', this.value); });
+$("#edgeColorProportional").change(   function() { fcnn.style({'edgeColorProportional_': this.checked}) });
+$("#defaultEdgeColor").change(        function() { fcnn.style({'defaultEdgeColor_': this.value}) });
+$("#showWeightLabels").change(        function() { fcnn.setShowWeightLabels(this.checked) });
+$("#nodeDiameter").change(            function() { fcnn.style({'nodeDiameter_': parseFloat(this.value)}) });
+$("#nodeColor").change(               function() { fcnn.style({'nodeColor_': this.value}) });
+$("#nodeBorderColor").change(         function() { fcnn.style({'nodeBorderColor_': this.value}) });
+$("#betweenLayers").change(           function() { fcnn.redistribute({'betweenLayers_': parseFloat(this.value)}) });
+$('#nnDirection input:radio').change( function() { fcnn.redistribute({'nnDirection_': this.value}) });
+$("#showLabels").change(              function() { fcnn.redraw({'showLabels_': this.checked}) });
+$("#showArrowheads").change(          function() { fcnn.style({'showArrowheads_': this.checked}) });
+$("#arrowhead input:radio").change(   function() { fcnn.style({'arrowheadStyle_': this.value}) });
+$("#bezierCurves").change(            function() { fcnn.redistribute({'bezierCurves_': this.checked}) });
+
+$('#togglePicker').click(function(e) {
+    e.preventDefault();
+    $('.nn-picker').toggle();
+});
+
+/////////////////////////////////////////////////////////////////////////////
+                 ///////    Select Architecture    ///////
+/////////////////////////////////////////////////////////////////////////////
+
+$(document).on('click', '.btn-add', function(e) {
+    e.preventDefault();
+
+    var controlForm = $('#architecture');
+    var currentEntry = $(this).parents('.entry:first');
+    var newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+    newEntry.find('input[name="numberOfNodes"]').val('');
+    controlForm.find('.entry:not(:last) .btn-add')
+        .removeClass('btn-add').addClass('btn-remove')
+        .removeClass('btn-primary').addClass('btn-secondary')
+        .html('<span class="fa fa-minus"></span>');
+
+    restart();
+
+});
+
+$(document).on('click', '.btn-remove', function(e) {
+    e.preventDefault();
+
+    $(this).parents('.entry:first').remove();
+
+    restart();
+
+    return false;
+
+});
+
+$(document).on('change', "input[name='numberOfNodes']", restart);
+
+$(document).on('change', "input[name='betweenNodesInLayer']", restart);  // fix this so we only redistribute
+
+/////////////////////////////////////////////////////////////////////////////
+                 ///////    Weight Initialization    ///////
+/////////////////////////////////////////////////////////////////////////////
+
+var reinitFeedbackTimer = null;
+
+$('#reinitialize').click(function() {
+    var scheme = $('#initScheme option:selected').text();
+    var seed = parseInt($('#seed').val()) || 0;
+
+    fcnn.initializeWeights({'initScheme_': $('#initScheme').val(), 'seed_': seed});
+    restart();
+
+    $('#reinitFeedback').text('✓ Weights reinitialized: ' + scheme + ', seed ' + seed).css('opacity', 1);
+    clearTimeout(reinitFeedbackTimer);
+    reinitFeedbackTimer = setTimeout(function() { $('#reinitFeedback').css('opacity', 0); }, 2500);
+});
+
+/////////////////////////////////////////////////////////////////////////////
+                 ///////    Neuron Detail Panel    ///////
+/////////////////////////////////////////////////////////////////////////////
+
+var activationNames = [['relu', 'ReLU'], ['leaky-relu', 'Leaky ReLU'], ['sigmoid', 'Sigmoid'], ['tanh', 'Tanh'], ['linear', 'Linear']];
+
+function fmt(v) { return (typeof v === 'number' && isFinite(v)) ? v.toFixed(4) : String(v); }
+
+function bold(s) { return '<span style="font-weight:bold">' + s + '</span>'; }
+
+function renderDetail() {
+
+    if (!selectedNeuron) { $('#neuron-detail').hide(); return; }
+
+    var m = fcnn.getModel();
+    var layer = selectedNeuron.layer;
+    var j = selectedNeuron.node_index;
+
+    if (layer >= m.architecture.length || j >= m.architecture[layer]) { $('#neuron-detail').hide(); return; }
+
+    var layerName = (layer === 0 ? 'Input' : (layer === m.architecture.length-1 ? 'Output' : 'Hidden'));
+    $('#detailTitle').text('Neuron ' + layer + '_' + j);
+    $('#detailSubtitle').text(layerName + ' layer ' + layer + ', neuron ' + j);
+
+    var body = $('#detailBody');
+    body.empty();
+
+    if (layer === 0) {
+
+        body.append(
+            '<p class="text">Input value x<sub>' + j + '</sub> (feeds every neuron in the next layer):</p>' +
+            '<input type="number" step="0.1" id="inputValue" class="form-control form-control-sm" style="width: 120px;" value="' + m.inputs[j] + '">'
+        );
+
+        $('#inputValue').on('change input', function() {
+            var v = parseFloat(this.value);
+            if (!isNaN(v)) { fcnn.setInput(j, v); }
+        });
+
+    } else {
+
+        var ws = m.weights[layer][j];
+        var xs = m.as[layer-1];
+        var b = m.biases[layer][j];
+        var z = m.zs[layer][j];
+        var a = m.as[layer][j];
+        var act = m.activations[layer];
+
+        var selector =
+            '<div style="margin-bottom: 10px;">' +
+            '<label for="activationSelect">Activation (applies to layer ' + layer + '):</label> ' +
+            '<select id="activationSelect" class="form-control form-control-sm" style="display: inline-block; width: auto; margin-left: 6px;">' +
+            activationNames.map(o => '<option value="' + o[0] + '"' + (o[0] === act ? ' selected' : '') + '>' + o[1] + '</option>').join('') +
+            '</select></div>';
+
+        var rows = ws.map((wv, i) =>
+            '<tr><td>' + (layer-1) + '_' + i + '</td><td>' + fmt(wv) + '</td><td>' + fmt(xs[i]) + '</td><td>' + fmt(wv * xs[i]) + '</td></tr>'
+        ).join('');
+        var table =
+            '<table class="table table-sm" style="font-size: 0.78rem;">' +
+            '<thead><tr><th>from</th><th>w<sub>i</sub></th><th>x<sub>i</sub></th><th>w<sub>i</sub>·x<sub>i</sub></th></tr></thead>' +
+            '<tbody>' + rows + '</tbody></table>';
+
+        var terms = ws.map((wv, i) => '(' + fmt(wv) + ')·(' + fmt(xs[i]) + ')').join(' + ');
+        var summation =
+            '<div class="summation">z = w·x + b<br>' +
+            'z = ' + terms + ' + (' + fmt(b) + ')<br>' +
+            'z = ' + bold(fmt(z)) + '</div>';
+
+        var output = '<p class="text" style="margin-bottom: 6px;">a = f(z) = ' + bold(fmt(a)) + '</p>';
+
+        body.append(
+            selector +
+            '<h6>Incoming weights (x<sub>i</sub> = activations of layer ' + (layer-1) + '):</h6>' + table +
+            '<h6>Weighted sum:</h6>' + summation +
+            output +
+            '<div id="activationPlot"></div>'
+        );
+
+        $('#activationSelect').change(function() {
+            fcnn.setActivation(layer, this.value);
+            renderDetail();
+        });
+
+        drawActivationPlot(act, z, a);
+    }
+
+    $('#neuron-detail').show();
+}
+
+function drawActivationPlot(actName, z, a) {
+
+    var f = fcnn.activationFunctions[actName];
+    if (!f || !isFinite(z)) { return; }
+
+    var W = 340, H = 160;
+    var margin = {top: 12, right: 12, bottom: 22, left: 40};
+
+    var xmin = Math.min(-3, z - 1), xmax = Math.max(3, z + 1);
+    var pts = d3.range(xmin, xmax + 1e-9, (xmax - xmin) / 200).map(v => [v, f(v)]);
+
+    var ymin = d3.min(pts, p => p[1]), ymax = d3.max(pts, p => p[1]);
+    if (ymax - ymin < 1e-9) { ymax = ymin + 1; }
+    var ypad = (ymax - ymin) * 0.1;
+
+    var xsc = d3.scaleLinear().domain([xmin, xmax]).range([margin.left, W - margin.right]);
+    var ysc = d3.scaleLinear().domain([ymin - ypad, ymax + ypad]).range([H - margin.bottom, margin.top]);
+
+    var plot = d3.select('#activationPlot').append('svg').attr('width', W).attr('height', H);
+
+    plot.append('g').attr('transform', 'translate(0,' + (H - margin.bottom) + ')')
+        .call(d3.axisBottom(xsc).ticks(6)).style('font-size', '8px');
+    plot.append('g').attr('transform', 'translate(' + margin.left + ',0)')
+        .call(d3.axisLeft(ysc).ticks(5)).style('font-size', '8px');
+
+    // zero lines
+    if (xmin < 0 && xmax > 0) {
+        plot.append('line').attr('x1', xsc(0)).attr('x2', xsc(0)).attr('y1', margin.top).attr('y2', H - margin.bottom)
+            .style('stroke', '#ddd').style('stroke-width', 1);
+    }
+    if (ymin - ypad < 0 && ymax + ypad > 0) {
+        plot.append('line').attr('x1', margin.left).attr('x2', W - margin.right).attr('y1', ysc(0)).attr('y2', ysc(0))
+            .style('stroke', '#ddd').style('stroke-width', 1);
+    }
+
+    plot.append('path')
+        .attr('d', d3.line().x(p => xsc(p[0])).y(p => ysc(p[1]))(pts))
+        .style('fill', 'none').style('stroke', '#333').style('stroke-width', 1.5);
+
+    plot.append('circle').attr('cx', xsc(z)).attr('cy', ysc(a)).attr('r', 4)
+        .style('fill', '#ff0000').style('stroke', 'white').style('stroke-width', 1);
+
+    plot.append('text')
+        .attr('x', Math.min(xsc(z) + 8, W - 90)).attr('y', Math.max(ysc(a) - 8, 12))
+        .style('font-size', '9px')
+        .text('(z, a) = (' + z.toFixed(3) + ', ' + a.toFixed(3) + ')');
+}
+
+$(document).on('click', '#closeDetail', function(e) {
+    e.preventDefault();
+    fcnn.selectNode(null);
+});
+
+/////////////////////////////////////////////////////////////////////////////
+                 ///////    Download SVG    ///////
+/////////////////////////////////////////////////////////////////////////////
+
+d3.select("#download").on("click", function() {
+    // export a clone of the diagram without the invisible hover-helper paths
+    var svgNode = d3.select("#graph-container svg").node().cloneNode(true);
+    d3.select(svgNode).selectAll(".link-hover").remove();
+    var source = new XMLSerializer().serializeToString(svgNode);
+
+    d3.select(this)
+      .attr("href", 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(source))))
+      .attr("download", "nn.svg")
+})
+
+    </script>
+
+</body>
+
+</html>
