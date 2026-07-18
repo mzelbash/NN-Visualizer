@@ -168,10 +168,18 @@ function FCNN() {
         as = [];
         as[0] = inputs.slice();
         for (let layer = 1; layer < architecture.length; layer++) {
-            let f = activationFunctions[activations[layer]] || activationFunctions['linear'];
             zs[layer] = range(architecture[layer]).map(j =>
                 weights[layer][j].reduce((acc, w_ji, i) => acc + w_ji * as[layer-1][i], 0) + biases[layer][j]);
-            as[layer] = zs[layer].map(f);
+            if (activations[layer] === 'softmax') {
+                // softmax acts on the whole layer; shift by max(z) for numerical stability
+                let maxZ = Math.max(...zs[layer]);
+                let exps = zs[layer].map(z => Math.exp(z - maxZ));
+                let sumExps = exps.reduce((acc, e) => acc + e, 0);
+                as[layer] = exps.map(e => e / sumExps);
+            } else {
+                let f = activationFunctions[activations[layer]] || activationFunctions['linear'];
+                as[layer] = zs[layer].map(f);
+            }
         }
     }
 
