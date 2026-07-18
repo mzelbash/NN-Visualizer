@@ -1,28 +1,34 @@
-# [NN-SVG](https://alexlenail.me/NN-SVG/)
+# NN-Visualizer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![status](https://joss.theoj.org/papers/52b511ab107595a805107aa4ad70161d/status.svg)](https://joss.theoj.org/papers/52b511ab107595a805107aa4ad70161d)
-| [Docs](https://github.com/zfrenchee/NN-SVG/wiki) | [Contributing](https://github.com/zfrenchee/NN-SVG/wiki/Contributing)
+**▶ Run it live: [https://mzelbash.github.io/NN-Visualizer/](https://mzelbash.github.io/NN-Visualizer/)**
 
-> **Note:** This is a modified, FCNN-only *teaching* fork of [NN-SVG](https://alexlenail.me/NN-SVG/) by [Alex Lenail](http://alexlenail.me/) (MIT license). The LeNet and AlexNet styles have been removed, and the FCNN view has been extended with seeded weight initialization (Xavier/Glorot, He, Normal, Uniform), weight-proportional sign-colored edges with tooltips and optional numeric labels, clickable neurons showing the full weighted sum z = Σwᵢxᵢ + b, per-layer activation functions (ReLU, Leaky ReLU, Sigmoid, Tanh, Linear) with activation curve plots, editable input values, and a live forward pass. It remains a fully static site — open `index.html` from the filesystem or host it on GitHub Pages. SVG export is preserved.
+NN-Visualizer is an interactive teaching tool for fully-connected neural networks (FCNNs). It lets students *see* what happens inside a network: every weight is drawn, every neuron can be opened up, and a live forward pass runs through the whole diagram as you change inputs, weights, or activation functions.
 
-Illustrations of Neural Network architectures are often time-consuming to produce, and machine learning researchers all too often find themselves constructing these diagrams from scratch by hand.
+## Features
 
-NN-SVG is a tool for creating Neural Network (NN) architecture drawings parametrically rather than manually. It also provides the ability to export those drawings to Scalable Vector Graphics (SVG) files, suitable for inclusion in academic papers or web pages.
+- **Parametric network builder** — set any number of layers and neurons per layer, with full control over spacing, colors, node size, orientation, and layout.
+- **Seeded weight initialization** — choose Xavier/Glorot, He, Normal(0, 0.5), or Uniform(−1, 1), with a numeric seed. The same seed always reproduces exactly the same weights and biases, so classroom examples are repeatable.
+- **Weights you can see** — edge thickness is proportional to |w|, sign can be color-coded (positive vs. negative, with a legend), hovering any edge shows its exact value, and numeric weight labels can be toggled on for all edges.
+- **Clickable neurons** — clicking any neuron opens a detail panel showing its incoming weights, the fully written-out weighted sum *z = w₁·x₁ + w₂·x₂ + … + b* with the actual numbers, the activation output *a = f(z)*, and a plot of the activation curve with the point (z, a) marked.
+- **Per-layer activation functions** — ReLU, Leaky ReLU, Sigmoid, Tanh, or Linear, switchable from any neuron's panel.
+- **Editable inputs & live forward pass** — click an input neuron to change its value; all downstream z and a values update immediately.
+- **SVG export** — download the current diagram as a clean, publication-ready SVG file.
+- **Fully static** — no build step and no server. Open `index.html` straight from the filesystem, or host the folder on any static host such as GitHub Pages.
 
-The tool provides the ability to generate figures of three kinds: classic Fully-Connected Neural Network (FCNN) figures, Convolutional Neural Network (CNN) figures of the sort introduced in [the LeNet paper](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf), and Deep Neural Network figures following the style introduced in [the AlexNet paper](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf). The former two are accomplished using the [D3 javascript library](https://d3js.org/) and the latter with the javascript library [Three.js](https://threejs.org/). NN-SVG provides the ability to style the figure to the user's liking via many size, color, and layout parameters.
+## Running locally
 
-I hope this tool will save machine learning researchers time, and I hope this software might also serve as a pedagogical tool in some contexts.
+Clone the repository and open `index.html` in a browser — that's it. (An internet connection is needed for the CDN-hosted libraries: d3, Bootstrap, and jQuery.)
 
-<img src="./example.svg">
+## License
 
+MIT.
 
-### Citation
+## Citation
 
-> LeNail, (2019). NN-SVG: Publication-Ready Neural Network Architecture Schematics. <br>
-> Journal of Open Source Software, 4(33), 747, https://doi.org/10.21105/joss.00747
+If you use NN-Visualizer, please cite:
 
-### Related
+> Elbasheer, Mohamed (2026). NN-Visualizer: An Interactive Teaching Tool for Fully-Connected Neural Networks. GitHub repository, github.com/mzelbash/NN-Visualizer.
 
-- [vdumoulin/conv_arithmetic](https://github.com/vdumoulin/conv_arithmetic)
-- [TensorSpace](https://github.com/tensorspace-team/tensorspace)
+NN-Visualizer is a modified version of the open-source NN-SVG project (MIT license), which should also be credited:
+
+> LeNail, Alexander (2019). NN-SVG: Publication-Ready Neural Network Architecture Schematics. Journal of Open Source Software, 4(33), 747, doi:10.21105/joss.00747.
