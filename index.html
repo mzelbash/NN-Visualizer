@@ -513,11 +513,15 @@ function renderDetail() {
         var a = m.as[layer][j];
         var act = m.activations[layer];
 
+        // softmax only makes sense for the output layer
+        var options = activationNames.slice();
+        if (layer === m.architecture.length-1) { options.push(['softmax', 'Softmax']); }
+
         var selector =
             '<div style="margin-bottom: 10px;">' +
             '<label for="activationSelect">Activation (applies to layer ' + layer + '):</label> ' +
             '<select id="activationSelect" class="form-control form-control-sm" style="display: inline-block; width: auto; margin-left: 6px;">' +
-            activationNames.map(o => '<option value="' + o[0] + '"' + (o[0] === act ? ' selected' : '') + '>' + o[1] + '</option>').join('') +
+            options.map(o => '<option value="' + o[0] + '"' + (o[0] === act ? ' selected' : '') + '>' + o[1] + '</option>').join('') +
             '</select></div>';
 
         var rows = ws.map((wv, i) =>
@@ -534,7 +538,16 @@ function renderDetail() {
             'z = ' + terms + ' + (' + fmt(b) + ')<br>' +
             'z = ' + bold(fmt(z)) + '</div>';
 
-        var output = '<p class="text" style="margin-bottom: 6px;">a = f(z) = ' + bold(fmt(a)) + '</p>';
+        var plotFn, output;
+        if (act === 'softmax') {
+            var sumOthers = m.zs[layer].reduce((acc, zk, k) => acc + (k === j ? 0 : Math.exp(zk)), 0);
+            plotFn = (v) => Math.exp(v) / (Math.exp(v) + sumOthers);
+            output = '<p class="text" style="margin-bottom: 6px;">a = softmax(z)<sub>' + j + '</sub> = e<sup>z</sup> / Σ<sub>k</sub> e<sup>z<sub>k</sub></sup> = ' + bold(fmt(a)) + '</p>' +
+                     '<p class="text" style="font-size: 0.8rem; margin-bottom: 6px;">softmax is computed over all ' + m.architecture[layer] + ' neuron(s) of this layer, so the layer outputs sum to 1; the curve below holds the other neurons’ z fixed</p>';
+        } else {
+            plotFn = fcnn.activationFunctions[act];
+            output = '<p class="text" style="margin-bottom: 6px;">a = f(z) = ' + bold(fmt(a)) + '</p>';
+        }
 
         body.append(
             selector +
@@ -549,16 +562,15 @@ function renderDetail() {
             renderDetail();
         });
 
-        drawActivationPlot(act, z, a);
+        drawActivationPlot(plotFn, z, a);
     }
 
     $('#neuron-detail').show();
 }
 
-function drawActivationPlot(actName, z, a) {
+function drawActivationPlot(f, z, a) {
 
-    var f = fcnn.activationFunctions[actName];
-    if (!f || !isFinite(z)) { return; }
+    if (typeof f !== 'function' || !isFinite(z)) { return; }
 
     var W = 340, H = 160;
     var margin = {top: 12, right: 12, bottom: 22, left: 40};
